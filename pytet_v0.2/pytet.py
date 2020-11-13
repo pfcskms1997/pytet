@@ -1,4 +1,5 @@
 from matrix import *
+import random
 
 def draw_matrix(m):
     array = m.get_array()
@@ -15,8 +16,43 @@ def draw_matrix(m):
 
 ###
 ### initialize variables
-###     
-arrayBlk = [ [ 0, 0, 1, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 1, 0 ] ]
+###
+
+# I-Block
+I = [ [ [ 0, 0, 1, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 1, 0 ] ],
+      [ [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 1, 1, 1, 1 ], [ 0, 0, 0, 0 ] ],
+      [ [ 0, 1, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 1, 0, 0 ] ],
+      [ [ 0, 0, 0, 0 ], [ 1, 1, 1, 1 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] ] ]
+# O-Block
+O = [ [ [ 1, 1 ], [ 1, 1 ] ],
+      [ [ 1, 1 ], [ 1, 1 ] ],
+      [ [ 1, 1 ], [ 1, 1 ] ],
+      [ [ 1, 1 ], [ 1, 1 ] ] ]
+# T-Block
+T = [ [ [ 0, 1, 0 ], [ 1, 1, 1 ], [ 0, 0, 0 ] ],
+      [ [ 0, 1, 0 ], [ 0, 1, 1 ], [ 0, 1, 0 ] ],
+      [ [ 0, 0, 0 ], [ 1, 1, 1 ], [ 0, 1, 0 ] ],
+      [ [ 0, 1, 0 ], [ 1, 1, 0 ], [ 0, 1, 0 ] ] ]
+# J-Block
+J = [ [ [ 0, 1, 0 ], [ 0, 1, 0 ], [ 1, 1, 0 ] ],
+      [ [ 1, 0, 0 ], [ 1, 1, 1 ], [ 0, 0, 0 ] ],
+      [ [ 0, 1, 1 ], [ 0, 1, 0 ], [ 0, 1, 0 ] ],
+      [ [ 0, 0, 0 ], [ 1, 1, 1 ], [ 0, 0, 1 ] ] ]
+# L-Block
+L = [ [ [ 0, 1, 0 ], [ 0, 1, 0 ], [ 0, 1, 1 ] ],
+      [ [ 0, 0, 0 ], [ 1, 1, 1 ], [ 1, 0, 0 ] ],
+      [ [ 1, 1, 0 ], [ 0, 1, 0 ], [ 0, 1, 0 ] ],
+      [ [ 0, 0, 1 ], [ 1, 1, 1 ], [ 0, 0, 0 ] ] ]
+# S-Block
+S = [ [ [ 0, 1, 1 ], [ 1, 1, 0 ], [ 0, 0, 0 ] ],
+      [ [ 0, 1, 0 ], [ 0, 1, 1 ], [ 0, 0, 1 ] ],
+      [ [ 0, 0, 0 ], [ 0, 1, 1 ], [ 1, 1, 0 ] ],
+      [ [ 1, 0, 0 ], [ 1, 1, 0 ], [ 0, 1, 0 ] ] ]
+# Z-Block
+Z = [ [ [ 1, 1, 0 ], [ 0, 1, 1 ], [ 0, 0, 0 ] ],
+      [ [ 0, 0, 1 ], [ 0, 1, 1 ], [ 0, 1, 0 ] ],
+      [ [ 0, 0, 0 ], [ 1, 1, 0 ], [ 0, 1, 1 ] ],
+      [ [ 0, 1, 0 ], [ 1, 1, 0 ], [ 1, 0, 0 ] ] ]
 
 ### integer variables: must always be integer!
 iScreenDy = 15
@@ -24,6 +60,10 @@ iScreenDx = 10
 iScreenDw = 4
 top = 0
 left = iScreenDw + iScreenDx//2 - 2
+
+rand_num = random.randint(0, 6)
+i = 0
+arrayBlk = [I, O, T, J, L, S, Z]
 
 newBlockNeeded = False
 
@@ -53,7 +93,7 @@ arrayScreen = [
 ###  
 iScreen = Matrix(arrayScreen)
 oScreen = Matrix(iScreen)
-currBlk = Matrix(arrayBlk)
+currBlk = Matrix(arrayBlk[rand_num][i])
 tempBlk = iScreen.clip(top, left, top+currBlk.get_dy(), left+currBlk.get_dx())
 tempBlk = tempBlk + currBlk
 oScreen.paste(tempBlk, top, left)
@@ -75,11 +115,13 @@ while True:
     elif key == 's': # move down
         top += 1
     elif key == 'w': # rotate the block clockwise
-        print('Not implemented')
-        continue
+        i = (i + 1) % 4
+        currBlk = Matrix(arrayBlk[rand_num][i])
     elif key == ' ': # drop the block
-        print('Not implemented')
-        continue
+        while tempBlk.anyGreaterThan(1) is False:
+            top += 1
+            tempBlk = iScreen.clip(top, left, top+currBlk.get_dy(), left+currBlk.get_dx())
+            tempBlk = tempBlk + currBlk
     else:
         print('Wrong key!!!')
         continue
@@ -95,9 +137,12 @@ while True:
             top -= 1
             newBlockNeeded = True
         elif key == 'w': # undo: rotate the block counter-clockwise
-            print('Not implemented')
+            i = (i - 1) % 4
+            currBlk = Matrix(arrayBlk[rand_num][i])
         elif key == ' ': # undo: move up
-            print('Not implemented')
+            top -= 1
+            newBlockNeeded = True
+            # print('Not implemented')
 
         tempBlk = iScreen.clip(top, left, top+currBlk.get_dy(), left+currBlk.get_dx())
         tempBlk = tempBlk + currBlk
@@ -111,7 +156,11 @@ while True:
         top = 0
         left = iScreenDw + iScreenDx//2 - 2
         newBlockNeeded = False
-        currBlk = Matrix(arrayBlk)
+
+        rand_num = random.randint(0, 6)
+        i = 0
+        
+        currBlk = Matrix(arrayBlk[rand_num][i])
         tempBlk = iScreen.clip(top, left, top+currBlk.get_dy(), left+currBlk.get_dx())
         tempBlk = tempBlk + currBlk
         if tempBlk.anyGreaterThan(1):
