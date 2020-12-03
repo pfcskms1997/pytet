@@ -68,10 +68,10 @@ class Tetris():
         for y in range(self.oScreen.get_dy()-Tetris.iScreenDw):
             for x in range(Tetris.iScreenDw, self.oScreen.get_dx()-Tetris.iScreenDw):
                 if array[y][x] == 0:
-                    print("□ ", end='')
+                    print("□", end='')
                     #LMD.set_pixel(y, 19-x, 0)
                 elif array[y][x] == 1:
-                    print("■ ", end='')
+                    print("■", end='')
                     #LMD.set_pixel(y, 19-x, 4)
                 else:
                     print("XX", end='')
